@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
-from app.routes import auth, users, products, cart, orders
+from app.routes import auth, users, products, cart, orders, admin
 from app.models import user, product, cart as cart_model, order
 
 app = FastAPI(
@@ -31,6 +31,7 @@ app.include_router(users.router)
 app.include_router(products.router)
 app.include_router(cart.router)
 app.include_router(orders.router)
+app.include_router(admin.router)
 
 
 @app.get("/")

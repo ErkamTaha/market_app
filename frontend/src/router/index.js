@@ -16,6 +16,7 @@ const routes = [
       { path: 'home', name: 'Home', component: () => import('../views/HomePage.vue') },
       { path: 'categories/:id', name: 'Category', component: () => import('../views/CategoryPage.vue') },
       { path: 'search', name: 'Search', component: () => import('../views/SearchPage.vue') },
+      { path: 'barcode', name: 'Barcode', component: () => import('../views/BarcodePage.vue') },
       { path: 'cart', name: 'Cart', component: () => import('../views/CartPage.vue') },
       { path: 'orders', name: 'Orders', component: () => import('../views/OrdersPage.vue') },
       { path: 'profile', name: 'Profile', component: () => import('../views/ProfilePage.vue') },
