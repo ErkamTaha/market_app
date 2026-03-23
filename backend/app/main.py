@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
-from app.routes import auth, users, products, cart, orders, admin
-from app.models import user, product, cart as cart_model, order
+from app.routes import auth, users, products, cart, orders, admin, navigation
+from app.models import user, product, cart as cart_model, order, location
 
 app = FastAPI(
     title="Market API",
@@ -32,6 +32,7 @@ app.include_router(products.router)
 app.include_router(cart.router)
 app.include_router(orders.router)
 app.include_router(admin.router)
+app.include_router(navigation.router)
 
 
 @app.get("/")

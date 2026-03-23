@@ -11,6 +11,10 @@
           <ion-icon :icon="barcodeOutline" />
           <ion-label>Tara</ion-label>
         </ion-tab-button>
+        <ion-tab-button tab="map" href="/tabs/map">
+          <ion-icon :icon="mapOutline" />
+          <ion-label>Harita</ion-label>
+        </ion-tab-button>
         <ion-tab-button tab="cart" href="/tabs/cart">
           <ion-icon :icon="cartOutline" />
           <ion-label>Sepet</ion-label>
@@ -32,7 +36,7 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useCartStore } from '../stores/cart'
-import { homeOutline, barcodeOutline, cartOutline, receiptOutline, personOutline } from 'ionicons/icons'
+import { homeOutline, barcodeOutline, mapOutline, cartOutline, receiptOutline, personOutline } from 'ionicons/icons'
 import { IonPage, IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonRouterOutlet, IonBadge } from '@ionic/vue'
 
 const cartStore = useCartStore()

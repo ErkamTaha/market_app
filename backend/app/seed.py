@@ -4,6 +4,7 @@ Creates categories and products on first run.
 """
 from app.database import SessionLocal
 from app.models.product import Category, Product
+from app.models.location import MapZone, ProductLocation
 
 
 def seed_all():
@@ -95,5 +96,139 @@ def seed_all():
         db.add(product)
 
     db.commit()
-    db.close()
     print(f"✓ {len(categories_data)} kategori ve {len(products_data)} ürün oluşturuldu")
+
+    # --- MAP LAYOUT ---
+    # Only seed map if no zones exist
+    if not db.query(MapZone).first():
+        seed_map(db)
+
+    db.close()
+
+
+def seed_map(db):
+    """
+    Create the default market floor plan.
+
+    Map coordinate system: 100 wide × 60 tall
+    0,0 is top-left
+
+    Layout:
+    ┌─────────────────────────────────────────────────────────────┐
+    │  wall                                                       │  y=0
+    │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐      │
+    │  │ Shelf 1  │  │ Shelf 2  │  │ Shelf 3  │  │ Shelf 4  │      │  y=5-20
+    │  │ Meyve    │  │ Süt      │  │ Et       │  │ Ekmek    │      │
+    │  └─────────┘  └─────────┘  └─────────┘  └─────────┘      │
+    │     aisle        aisle        aisle        aisle            │  y=20-25
+    │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐      │
+    │  │ Shelf 5  │  │ Shelf 6  │  │ Shelf 7  │  │ Shelf 8  │      │  y=25-40
+    │  │ İçecek   │  │ Atıştır  │  │ Temizlik │  │ Kişisel  │      │
+    │  └─────────┘  └─────────┘  └─────────┘  └─────────┘      │
+    │     aisle        aisle        aisle        aisle            │  y=40-45
+    │                                          ┌──────────┐      │
+    │  [Giriş]                                │  Kasa     │      │  y=45-55
+    │                                          └──────────┘      │
+    └─────────────────────────────────────────────────────────────┘  y=60
+    """
+    print("Harita seed verisi yükleniyor...")
+
+    zones_data = [
+        # Outer walls
+        {"name": "Üst Duvar", "zone_type": "wall", "x": 0, "y": 0, "width": 100, "height": 2, "color": "#374151"},
+        {"name": "Sol Duvar", "zone_type": "wall", "x": 0, "y": 0, "width": 2, "height": 60, "color": "#374151"},
+        {"name": "Sağ Duvar", "zone_type": "wall", "x": 98, "y": 0, "width": 2, "height": 60, "color": "#374151"},
+        {"name": "Alt Duvar Sol", "zone_type": "wall", "x": 0, "y": 58, "width": 30, "height": 2, "color": "#374151"},
+        {"name": "Alt Duvar Sağ", "zone_type": "wall", "x": 45, "y": 58, "width": 55, "height": 2, "color": "#374151"},
+
+        # Row 1 shelves (y: 5-18)
+        {"name": "Reyon 1 — Meyve & Sebze", "zone_type": "shelf", "x": 5, "y": 5, "width": 18, "height": 13, "color": "#86efac", "label": "Meyve\nSebze"},
+        {"name": "Reyon 2 — Süt Ürünleri", "zone_type": "shelf", "x": 28, "y": 5, "width": 18, "height": 13, "color": "#bfdbfe", "label": "Süt\nÜrünleri"},
+        {"name": "Reyon 3 — Et & Tavuk", "zone_type": "shelf", "x": 51, "y": 5, "width": 18, "height": 13, "color": "#fca5a5", "label": "Et\nTavuk"},
+        {"name": "Reyon 4 — Ekmek & Fırın", "zone_type": "shelf", "x": 74, "y": 5, "width": 18, "height": 13, "color": "#fde68a", "label": "Ekmek\nFırın"},
+
+        # Aisle between row 1 and row 2 (y: 18-25)
+        {"name": "Koridor 1", "zone_type": "aisle", "x": 2, "y": 18, "width": 96, "height": 7, "color": "#f8fafc"},
+
+        # Row 2 shelves (y: 25-38)
+        {"name": "Reyon 5 — İçecekler", "zone_type": "shelf", "x": 5, "y": 25, "width": 18, "height": 13, "color": "#93c5fd", "label": "İçecekler"},
+        {"name": "Reyon 6 — Atıştırmalık", "zone_type": "shelf", "x": 28, "y": 25, "width": 18, "height": 13, "color": "#fdba74", "label": "Atıştır-\nmalık"},
+        {"name": "Reyon 7 — Temizlik", "zone_type": "shelf", "x": 51, "y": 25, "width": 18, "height": 13, "color": "#67e8f9", "label": "Temizlik"},
+        {"name": "Reyon 8 — Kişisel Bakım", "zone_type": "shelf", "x": 74, "y": 25, "width": 18, "height": 13, "color": "#c4b5fd", "label": "Kişisel\nBakım"},
+
+        # Aisle between row 2 and bottom (y: 38-45)
+        {"name": "Koridor 2", "zone_type": "aisle", "x": 2, "y": 38, "width": 96, "height": 7, "color": "#f8fafc"},
+
+        # Side aisles
+        {"name": "Sol Koridor", "zone_type": "aisle", "x": 2, "y": 2, "width": 3, "height": 56, "color": "#f8fafc"},
+        {"name": "Sağ Koridor", "zone_type": "aisle", "x": 92, "y": 2, "width": 6, "height": 56, "color": "#f8fafc"},
+        {"name": "Ara Koridor 1", "zone_type": "aisle", "x": 23, "y": 5, "width": 5, "height": 33, "color": "#f8fafc"},
+        {"name": "Ara Koridor 2", "zone_type": "aisle", "x": 46, "y": 5, "width": 5, "height": 33, "color": "#f8fafc"},
+        {"name": "Ara Koridor 3", "zone_type": "aisle", "x": 69, "y": 5, "width": 5, "height": 33, "color": "#f8fafc"},
+
+        # Entrance
+        {"name": "Giriş", "zone_type": "entrance", "x": 30, "y": 52, "width": 15, "height": 6, "color": "#bbf7d0", "label": "GİRİŞ"},
+
+        # Checkout
+        {"name": "Kasa 1", "zone_type": "checkout", "x": 60, "y": 45, "width": 14, "height": 8, "color": "#fef08a", "label": "KASA"},
+        {"name": "Kasa 2", "zone_type": "checkout", "x": 76, "y": 45, "width": 14, "height": 8, "color": "#fef08a", "label": "KASA"},
+
+        # Open floor
+        {"name": "Ana Alan", "zone_type": "aisle", "x": 2, "y": 45, "width": 58, "height": 13, "color": "#f8fafc"},
+    ]
+
+    zones = []
+    for z_data in zones_data:
+        zone = MapZone(**z_data)
+        db.add(zone)
+        db.flush()
+        zones.append(zone)
+
+    # --- PRODUCT LOCATIONS ---
+    # Assign each product to a position on the correct shelf
+    # Products are ordered by category in the seed data
+
+    products = db.query(Product).order_by(Product.category_id, Product.id).all()
+
+    # Map category_id to shelf zone index (0-based in zones list, shelves start at index 5)
+    # Category 1 (Meyve) → Zone index 5 (Reyon 1)
+    # Category 2 (Süt)   → Zone index 6 (Reyon 2)
+    # etc.
+    category_to_zone = {}
+    categories = db.query(Category).order_by(Category.sort_order).all()
+    for i, cat in enumerate(categories):
+        zone_idx = 5 + i  # shelves start at index 5 in zones_data
+        if zone_idx < len(zones):
+            category_to_zone[cat.id] = zones[zone_idx]
+
+    product_count = 0
+    for product in products:
+        zone = category_to_zone.get(product.category_id)
+        if not zone:
+            continue
+
+        # Distribute products evenly within the shelf zone
+        products_in_cat = [p for p in products if p.category_id == product.category_id]
+        idx_in_cat = products_in_cat.index(product)
+        total_in_cat = len(products_in_cat)
+
+        # Calculate position within the shelf
+        col = idx_in_cat % 3  # up to 3 columns
+        row = idx_in_cat // 3  # rows
+
+        px = zone.x + 3 + col * 5  # spread across the shelf width
+        py = zone.y + 3 + row * 4  # spread across the shelf height
+
+        loc = ProductLocation(
+            product_id=product.id,
+            zone_id=zone.id,
+            x=px,
+            y=py,
+            z=1.0 + (idx_in_cat % 3) * 0.5,  # vary shelf height
+            shelf_label=f"{zone.label or zone.name}, Raf {row + 1}"
+        )
+        db.add(loc)
+        product_count += 1
+
+    db.commit()
+    print(f"✓ {len(zones_data)} bölge ve {product_count} ürün konumu oluşturuldu")

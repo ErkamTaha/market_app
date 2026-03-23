@@ -36,6 +36,9 @@
               <span class="unit">/{{ p.unit }}</span>
             </div>
           </div>
+          <ion-button fill="clear" size="small" @click.stop="router.push(`/tabs/map?product_id=${p.id}`)">
+            <ion-icon :icon="locationOutline" slot="icon-only" color="primary" />
+          </ion-button>
           <ion-button fill="outline" size="small" @click.stop="addToCart(p)">
             <ion-icon :icon="addOutline" slot="icon-only" />
           </ion-button>
@@ -50,7 +53,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCartStore } from '../stores/cart'
 import api from '../services/api'
-import { searchOutline, addOutline } from 'ionicons/icons'
+import { searchOutline, addOutline, locationOutline } from 'ionicons/icons'
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
   IonSearchbar, IonSpinner, IonButton, IonIcon, toastController

@@ -89,6 +89,10 @@
               <ion-icon :icon="cartOutline" slot="start" />
               Sepete Ekle
             </ion-button>
+            <ion-button fill="outline" @click="router.push(`/tabs/map?product_id=${product.id}`)">
+              <ion-icon :icon="mapOutline" slot="start" />
+              Haritada Göster
+            </ion-button>
           </div>
         </ion-card-content>
       </ion-card>
@@ -109,7 +113,7 @@ import { useCartStore } from '../stores/cart'
 import api from '../services/api'
 import {
   barcodeOutline, searchOutline, cartOutline,
-  addOutline, removeOutline, alertCircleOutline
+  addOutline, removeOutline, alertCircleOutline, mapOutline
 } from 'ionicons/icons'
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,

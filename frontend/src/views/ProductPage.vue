@@ -45,6 +45,12 @@
             <span>{{ product.barcode }}</span>
           </div>
 
+          <!-- Find on map -->
+          <ion-button expand="block" fill="outline" color="primary" class="find-btn" @click="router.push(`/tabs/map?product_id=${product.id}`)">
+            <ion-icon :icon="mapOutline" slot="start" />
+            Markette Bul
+          </ion-button>
+
           <!-- Quantity selector -->
           <div class="qty-section" v-if="product.is_in_stock">
             <span class="qty-label">Adet:</span>
@@ -79,7 +85,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCartStore } from '../stores/cart'
 import api from '../services/api'
-import { cartOutline, addOutline, removeOutline, barcodeOutline } from 'ionicons/icons'
+import { cartOutline, addOutline, removeOutline, barcodeOutline, mapOutline } from 'ionicons/icons'
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
   IonBackButton, IonSpinner, IonButton, IonIcon, IonBadge, toastController

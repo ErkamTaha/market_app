@@ -34,6 +34,7 @@ const navItems = [
   { path: '/', label: 'Genel Bakış' },
   { path: '/orders', label: 'Satışlar' },
   { path: '/products', label: 'Ürünler' },
+  { path: '/map', label: 'Harita' },
 ]
 
 watch(() => route.path, () => {
