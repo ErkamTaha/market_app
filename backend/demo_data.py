@@ -1,16 +1,7 @@
 """
-Market Demo Data Script
-=======================
-Creates realistic fake users, orders, and cart data.
-
-Usage:
-    cd backend
-    source venv/bin/activate
-    python demo_data.py
+Market Demo Data Script — In-Store Flow
 """
-import os
-import sys
-import random
+import os, sys, random, uuid
 from datetime import datetime, timedelta, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -18,7 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from app.database import SessionLocal, engine, Base
 from app.models.user import User
 from app.models.product import Product
-from app.models.order import Order, OrderItem
+from app.models.order import Purchase, PurchaseItem
 from app.services.auth import hash_password
 
 Base.metadata.create_all(bind=engine)
@@ -43,100 +34,66 @@ for u in demo_users:
         print(f"  Kullanıcı zaten var: {u['full_name']}")
         created_users.append(existing)
         continue
-
-    user = User(
-        email=u["email"], phone=u["phone"], full_name=u["full_name"],
-        hashed_password=hash_password(u["password"]),
-        loyalty_points=u["points"]
-    )
+    user = User(email=u["email"], phone=u["phone"], full_name=u["full_name"],
+                hashed_password=hash_password(u["password"]), loyalty_points=u["points"])
     db.add(user)
     db.commit()
     db.refresh(user)
     created_users.append(user)
-    print(f"  ✓ Kullanıcı oluşturuldu: {u['full_name']}")
+    print(f"  ✓ {u['full_name']}")
 
-print(f"\n  Toplam kullanıcı: {len(created_users)}\n")
+print(f"\n  Toplam: {len(created_users)} kullanıcı\n")
 
-# --- ORDERS ---
+# --- PURCHASES ---
 products = db.query(Product).all()
 if not products:
-    print("  ⚠ Ürün bulunamadı! Önce sunucuyu çalıştırın.")
-    sys.exit(1)
+    print("  ⚠ Ürün yok!"); sys.exit(1)
 
 now = datetime.now(timezone.utc)
+payment_methods = ["kart", "kart", "kart", "nakit", "nakit"]
 
-# Order scenarios
-order_scenarios = [
-    # (user_idx, num_items, status, days_ago, note)
-    (0, 4, "teslim_edildi", 5, None),
-    (0, 2, "teslim_edildi", 3, "Kapıda bırakın"),
-    (0, 6, "hazırlanıyor", 0, None),
-    (1, 3, "teslim_edildi", 7, None),
-    (1, 5, "hazır", 0, "Poşetsiz olsun"),
-    (2, 8, "teslim_edildi", 4, None),
-    (2, 3, "teslim_edildi", 2, None),
-    (2, 4, "hazırlanıyor", 0, None),
-    (2, 2, "iptal", 1, None),
-    (3, 3, "teslim_edildi", 6, "Meyveleri sert seçin"),
-    (3, 5, "hazır", 0, None),
-    (4, 2, "teslim_edildi", 8, None),
-    (4, 4, "teslim_edildi", 3, None),
-    (4, 3, "hazırlanıyor", 0, "Acil lütfen"),
-    (5, 6, "teslim_edildi", 5, None),
-    (5, 4, "teslim_edildi", 2, None),
-    (5, 7, "hazırlanıyor", 0, None),
-    (5, 2, "iptal", 1, "Vazgeçtim"),
+scenarios = [
+    (0, 4, "ödendi", 5), (0, 2, "ödendi", 3), (0, 6, "ödendi", 0),
+    (1, 3, "ödendi", 7), (1, 5, "ödendi", 1),
+    (2, 8, "ödendi", 4), (2, 3, "ödendi", 2), (2, 4, "ödendi", 0), (2, 2, "iptal", 1),
+    (3, 3, "ödendi", 6), (3, 5, "ödendi", 0),
+    (4, 2, "ödendi", 8), (4, 4, "ödendi", 3), (4, 3, "ödendi", 0),
+    (5, 6, "ödendi", 5), (5, 4, "ödendi", 2), (5, 7, "ödendi", 0), (5, 2, "iptal", 1),
 ]
 
-print("Siparişler oluşturuluyor...")
-for user_idx, num_items, status, days_ago, note in order_scenarios:
+print("Satışlar oluşturuluyor...")
+for user_idx, num_items, status, days_ago in scenarios:
     user = created_users[user_idx]
-    order_date = now - timedelta(days=days_ago, hours=random.randint(1, 12))
-
-    # Pick random products
+    purchase_date = now - timedelta(days=days_ago, hours=random.randint(1, 12))
     selected = random.sample(products, min(num_items, len(products)))
-    total = 0
-    item_count = 0
-    order_items = []
 
+    total = 0; item_count = 0; items = []
     for prod in selected:
         qty = random.randint(1, 3)
         price = prod.discount_price if prod.discount_price else prod.price
         subtotal = round(price * qty, 2)
-        total += subtotal
-        item_count += qty
-        order_items.append(OrderItem(
-            product_id=prod.id,
-            product_name=prod.name,
-            product_price=price,
-            quantity=qty,
-            subtotal=subtotal
+        total += subtotal; item_count += qty
+        items.append(PurchaseItem(
+            product_id=prod.id, product_name=prod.name,
+            product_price=price, quantity=qty, subtotal=subtotal
         ))
 
-    order = Order(
-        user_id=user.id,
-        total_price=round(total, 2),
-        item_count=item_count,
-        status=status,
-        note=note,
-        created_at=order_date
+    points = int(total // 10)
+    purchase = Purchase(
+        user_id=user.id, total_price=round(total, 2), item_count=item_count,
+        receipt_code=f"MKT-{uuid.uuid4().hex[:8].upper()}",
+        payment_method=random.choice(payment_methods),
+        store_name="Market Çerkezköy", status=status,
+        points_earned=points if status == "ödendi" else 0,
+        created_at=purchase_date
     )
-    db.add(order)
-    db.flush()
-
-    for item in order_items:
-        item.order_id = order.id
-        db.add(item)
+    db.add(purchase); db.flush()
+    for item in items:
+        item.purchase_id = purchase.id; db.add(item)
 
 db.commit()
-print(f"  ✓ {len(order_scenarios)} sipariş oluşturuldu")
+print(f"  ✓ {len(scenarios)} satış oluşturuldu")
 
 db.close()
-
-print("\n" + "=" * 50)
-print("Demo verileri başarıyla oluşturuldu!")
-print("=" * 50)
-print(f"\nGiriş bilgileri:")
-print(f"  E-posta: erkam@market.com")
-print(f"  Şifre:   demo1234")
-print(f"\nTüm kullanıcılar için şifre: demo1234")
+print(f"\n{'='*50}\nDemo verileri oluşturuldu!\n{'='*50}")
+print(f"\nGiriş: erkam@market.com / demo1234")

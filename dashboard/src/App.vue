@@ -32,7 +32,7 @@ const isLoggedIn = ref(!!localStorage.getItem('market_admin_token'))
 
 const navItems = [
   { path: '/', label: 'Genel Bakış' },
-  { path: '/orders', label: 'Siparişler' },
+  { path: '/orders', label: 'Satışlar' },
   { path: '/products', label: 'Ürünler' },
 ]
 

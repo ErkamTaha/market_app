@@ -1,61 +1,65 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Text
+import uuid
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 from app.database import Base
 
 
-class Order(Base):
+class Purchase(Base):
     """
-    A completed purchase.
+    A completed in-store purchase (receipt).
 
-    When the user checks out, all cart items become an Order
-    with OrderItems. The cart is then cleared.
+    Flow: Customer scans products → adds to cart → pays at checkout →
+    gets a digital receipt with a verification code.
 
-    Status flow:
-      "hazırlanıyor" (preparing) → "hazır" (ready for pickup) → "teslim_edildi" (delivered)
-                                 → "iptal" (cancelled)
+    No delivery tracking needed — the customer is physically in the store.
+    The receipt_code is a unique code the cashier can verify.
     """
-    __tablename__ = "orders"
+    __tablename__ = "purchases"
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
 
-    # Total price at the time of order
     total_price = Column(Float, nullable=False)
     item_count = Column(Integer, nullable=False)
 
-    status = Column(String, default="hazırlanıyor")
-    # hazırlanıyor, hazır, teslim_edildi, iptal
+    # Unique receipt code — shown as QR to cashier for verification
+    receipt_code = Column(String, unique=True, index=True, nullable=False,
+                          default=lambda: f"MKT-{uuid.uuid4().hex[:8].upper()}")
 
-    # Optional note from customer
-    note = Column(Text)
+    # Payment method: "kart" (card in-app), "nakit" (cash at register), "cüzdan" (wallet)
+    payment_method = Column(String, default="kart")
+
+    # Which market location
+    store_name = Column(String, default="Market Çerkezköy")
+
+    # Status: "ödendi" (paid) or "iptal" (cancelled/refunded)
+    status = Column(String, default="ödendi")
+
+    # Loyalty points earned from this purchase
+    points_earned = Column(Integer, default=0)
 
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     user = relationship("User")
-    items = relationship("OrderItem", back_populates="order")
+    items = relationship("PurchaseItem", back_populates="purchase")
 
 
-class OrderItem(Base):
+class PurchaseItem(Base):
     """
-    Individual items within an order.
-
-    We store the price and name at the time of purchase because:
-    - Product price might change after the order
-    - Product might be deleted
-    The customer's receipt should always show what they actually paid.
+    Individual items in a purchase receipt.
+    Snapshot of product info at time of purchase.
     """
-    __tablename__ = "order_items"
+    __tablename__ = "purchase_items"
 
     id = Column(Integer, primary_key=True, index=True)
-    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False, index=True)
+    purchase_id = Column(Integer, ForeignKey("purchases.id"), nullable=False, index=True)
     product_id = Column(Integer, ForeignKey("products.id"), nullable=True)
 
-    # Snapshot at time of purchase
     product_name = Column(String, nullable=False)
     product_price = Column(Float, nullable=False)
     quantity = Column(Integer, nullable=False)
-    subtotal = Column(Float, nullable=False)  # price * quantity
+    subtotal = Column(Float, nullable=False)
 
-    order = relationship("Order", back_populates="items")
+    purchase = relationship("Purchase", back_populates="items")
     product = relationship("Product")

@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 
-class OrderItemResponse(BaseModel):
+class PurchaseItemResponse(BaseModel):
     id: int
     product_name: str
     product_price: float
@@ -12,17 +12,20 @@ class OrderItemResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
-class OrderResponse(BaseModel):
+class PurchaseResponse(BaseModel):
     id: int
     total_price: float
     item_count: int
+    receipt_code: str
+    payment_method: str
+    store_name: str
     status: str
-    note: str | None
+    points_earned: int
     created_at: datetime
-    items: list[OrderItemResponse]
+    items: list[PurchaseItemResponse]
 
     model_config = {"from_attributes": True}
 
 
 class CheckoutRequest(BaseModel):
-    note: str | None = None
+    payment_method: str = "kart"  # kart, nakit, cüzdan

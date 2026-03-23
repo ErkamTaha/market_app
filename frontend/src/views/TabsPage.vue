@@ -7,13 +7,9 @@
           <ion-icon :icon="homeOutline" />
           <ion-label>Ana Sayfa</ion-label>
         </ion-tab-button>
-        <ion-tab-button tab="search" href="/tabs/search">
-          <ion-icon :icon="searchOutline" />
-          <ion-label>Ara</ion-label>
-        </ion-tab-button>
         <ion-tab-button tab="barcode" href="/tabs/barcode">
           <ion-icon :icon="barcodeOutline" />
-          <ion-label>Barkod</ion-label>
+          <ion-label>Tara</ion-label>
         </ion-tab-button>
         <ion-tab-button tab="cart" href="/tabs/cart">
           <ion-icon :icon="cartOutline" />
@@ -22,7 +18,7 @@
         </ion-tab-button>
         <ion-tab-button tab="orders" href="/tabs/orders">
           <ion-icon :icon="receiptOutline" />
-          <ion-label>Siparişler</ion-label>
+          <ion-label>Fişlerim</ion-label>
         </ion-tab-button>
         <ion-tab-button tab="profile" href="/tabs/profile">
           <ion-icon :icon="personOutline" />
@@ -36,12 +32,9 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useCartStore } from '../stores/cart'
-import { homeOutline, searchOutline, barcodeOutline, cartOutline, receiptOutline, personOutline } from 'ionicons/icons'
+import { homeOutline, barcodeOutline, cartOutline, receiptOutline, personOutline } from 'ionicons/icons'
 import { IonPage, IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonRouterOutlet, IonBadge } from '@ionic/vue'
 
 const cartStore = useCartStore()
-
-onMounted(() => {
-  cartStore.fetchCart()
-})
+onMounted(() => { cartStore.fetchCart() })
 </script>

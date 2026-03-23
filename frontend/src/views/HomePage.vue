@@ -15,6 +15,21 @@
         </div>
       </div>
 
+      <!-- In-store location banner -->
+      <div class="store-banner">
+        <ion-icon :icon="locationOutline" class="store-icon" />
+        <div>
+          <strong>Market Çerkezköy</strong>
+          <p>Mağazadasınız — Ürünleri tarayarak alışveriş yapın</p>
+        </div>
+      </div>
+
+      <!-- Scan & Go button -->
+      <ion-button expand="block" class="scan-go-btn" router-link="/tabs/barcode">
+        <ion-icon :icon="barcodeOutline" slot="start" />
+        Ürün Tara ve Alışverişe Başla
+      </ion-button>
+
       <!-- On sale banner -->
       <div class="sale-banner" @click="router.push('/tabs/search?on_sale=true')">
         <ion-icon :icon="pricetagOutline" class="sale-icon" />
@@ -79,7 +94,8 @@ import api from '../services/api'
 import {
   starOutline, pricetagOutline, chevronForwardOutline, addOutline,
   leafOutline, waterOutline, restaurantOutline, pizzaOutline,
-  beerOutline, fastFoodOutline, sparklesOutline, bodyOutline
+  beerOutline, fastFoodOutline, sparklesOutline, bodyOutline,
+  locationOutline, barcodeOutline
 } from 'ionicons/icons'
 import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
@@ -153,6 +169,12 @@ async function addToCart(product) {
 .welcome { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .welcome h2 { margin: 0; font-size: 20px; }
 .points-badge { display: flex; align-items: center; gap: 4px; background: var(--ion-color-warning-tint); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+
+.store-banner { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: linear-gradient(135deg, #059669, #10b981); color: white; border-radius: 12px; margin-bottom: 12px; }
+.store-icon { font-size: 28px; }
+.store-banner p { font-size: 12px; opacity: 0.85; margin: 2px 0 0; }
+
+.scan-go-btn { margin-bottom: 12px; --padding-top: 14px; --padding-bottom: 14px; font-size: 16px; font-weight: 700; }
 
 .sale-banner { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: linear-gradient(135deg, #ff6b6b, #ee5a24); color: white; border-radius: 12px; margin-bottom: 16px; cursor: pointer; }
 .sale-icon { font-size: 28px; }
