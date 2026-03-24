@@ -7,7 +7,7 @@ from app.models.user import User
 from app.schemas.cart import CartItemAdd, CartItemUpdate, CartItemResponse
 from app.services.auth import get_current_user
 
-router = APIRouter(prefix="/cart", tags=["Sepet"])
+router = APIRouter(prefix="/cart", tags=["Cart"])
 
 
 @router.get("/", response_model=list[CartItemResponse])
@@ -36,10 +36,10 @@ def add_to_cart(
         Product.is_active == True
     ).first()
     if not product:
-        raise HTTPException(status_code=404, detail="Ürün bulunamadı")
+        raise HTTPException(status_code=404, detail="Product not found")
 
     if not product.is_in_stock or product.stock < data.quantity:
-        raise HTTPException(status_code=400, detail="Yeterli stok yok")
+        raise HTTPException(status_code=400, detail="Insufficient stock")
 
     # Check if already in cart
     existing = db.query(CartItem).filter(
@@ -83,12 +83,12 @@ def update_cart_item(
     ).first()
 
     if not item:
-        raise HTTPException(status_code=404, detail="Sepet öğesi bulunamadı")
+        raise HTTPException(status_code=404, detail="Cart item not found")
 
     if data.quantity <= 0:
         db.delete(item)
         db.commit()
-        raise HTTPException(status_code=200, detail="Ürün sepetten kaldırıldı")
+        raise HTTPException(status_code=200, detail="Item removed from cart")
 
     item.quantity = data.quantity
     db.commit()
@@ -109,11 +109,11 @@ def remove_from_cart(
     ).first()
 
     if not item:
-        raise HTTPException(status_code=404, detail="Sepet öğesi bulunamadı")
+        raise HTTPException(status_code=404, detail="Cart item not found")
 
     db.delete(item)
     db.commit()
-    return {"message": "Ürün sepetten kaldırıldı"}
+    return {"message": "Item removed from cart"}
 
 
 @router.delete("/")
@@ -124,4 +124,4 @@ def clear_cart(
     """Clear all items from the cart."""
     db.query(CartItem).filter(CartItem.user_id == current_user.id).delete()
     db.commit()
-    return {"message": "Sepet temizlendi"}
+    return {"message": "Cart cleared"}

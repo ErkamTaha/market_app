@@ -5,18 +5,18 @@ from app.models.user import User
 from app.schemas.user import UserCreate, UserLogin, UserResponse, Token
 from app.services.auth import hash_password, verify_password, create_access_token
 
-router = APIRouter(prefix="/auth", tags=["Kimlik Doğrulama"])
+router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register(user_data: UserCreate, db: Session = Depends(get_db)):
     existing = db.query(User).filter(User.email == user_data.email).first()
     if existing:
-        raise HTTPException(status_code=400, detail="Bu e-posta adresi zaten kayıtlı")
+        raise HTTPException(status_code=400, detail="This email is already registered")
 
     existing_phone = db.query(User).filter(User.phone == user_data.phone).first()
     if existing_phone:
-        raise HTTPException(status_code=400, detail="Bu telefon numarası zaten kayıtlı")
+        raise HTTPException(status_code=400, detail="This phone number is already registered")
 
     new_user = User(
         email=user_data.email,
@@ -34,7 +34,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
 def login(user_data: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == user_data.email).first()
     if not user or not verify_password(user_data.password, user.hashed_password):
-        raise HTTPException(status_code=401, detail="Geçersiz e-posta veya şifre")
+        raise HTTPException(status_code=401, detail="Invalid email or password")
 
     access_token = create_access_token(data={"sub": str(user.id)})
     return {"access_token": access_token, "token_type": "bearer"}

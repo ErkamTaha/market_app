@@ -4,7 +4,7 @@ from app.database import get_db
 from app.models.product import Category, Product
 from app.schemas.product import CategoryResponse, ProductResponse, ProductWithCategoryResponse
 
-router = APIRouter(prefix="/products", tags=["Ürünler"])
+router = APIRouter(prefix="/products", tags=["Products"])
 
 
 @router.get("/categories", response_model=list[CategoryResponse])
@@ -55,7 +55,7 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
     ).filter(Product.id == product_id).first()
 
     if not product:
-        raise HTTPException(status_code=404, detail="Ürün bulunamadı")
+        raise HTTPException(status_code=404, detail="Product not found")
     return product
 
 
@@ -70,5 +70,5 @@ def get_product_by_barcode(barcode: str, db: Session = Depends(get_db)):
     ).filter(Product.barcode == barcode).first()
 
     if not product:
-        raise HTTPException(status_code=404, detail="Bu barkoda ait ürün bulunamadı")
+        raise HTTPException(status_code=404, detail="No product found for this barcode")
     return product

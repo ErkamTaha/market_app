@@ -2,9 +2,9 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-title>Sepetim</ion-title>
+        <ion-title>My Cart</ion-title>
         <ion-buttons slot="end" v-if="cartStore.items.length > 0 && !receipt">
-          <ion-button color="danger" @click="clearCart">Temizle</ion-button>
+          <ion-button color="danger" @click="clearCart">Clear</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -14,20 +14,20 @@
       <div v-if="receipt" class="receipt-view">
         <div class="receipt-success">
           <ion-icon :icon="checkmarkCircleOutline" class="success-icon" />
-          <h2>Ödeme Başarılı!</h2>
+          <h2>Payment Successful!</h2>
           <p class="receipt-store">{{ receipt.store_name }}</p>
         </div>
 
         <div class="receipt-card">
           <div class="receipt-header">
-            <span>Fiş No</span>
+            <span>Receipt No</span>
             <strong>{{ receipt.receipt_code }}</strong>
           </div>
 
           <!-- QR code for cashier -->
           <div class="receipt-qr">
             <img :src="'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + receipt.receipt_code" alt="QR" />
-            <p>Bu kodu kasada gösterin</p>
+            <p>Show this code at the checkout</p>
           </div>
 
           <!-- Items -->
@@ -39,28 +39,28 @@
           </div>
 
           <div class="receipt-total">
-            <span>Toplam</span>
+            <span>Total</span>
             <strong>{{ receipt.total_price.toFixed(2) }} ₺</strong>
           </div>
 
           <div class="receipt-meta">
-            <div><span>Ödeme</span><span>{{ getPaymentLabel(receipt.payment_method) }}</span></div>
-            <div><span>Puan Kazanıldı</span><span>+{{ receipt.points_earned }}</span></div>
-            <div><span>Tarih</span><span>{{ formatDate(receipt.created_at) }}</span></div>
+            <div><span>Payment</span><span>{{ getPaymentLabel(receipt.payment_method) }}</span></div>
+            <div><span>Points Earned</span><span>+{{ receipt.points_earned }}</span></div>
+            <div><span>Date</span><span>{{ formatDate(receipt.created_at) }}</span></div>
           </div>
         </div>
 
         <ion-button expand="block" @click="receipt = null; router.push('/tabs/home')">
-          Alışverişe Devam Et
+          Continue Shopping
         </ion-button>
       </div>
 
       <!-- Empty cart -->
       <div class="empty" v-else-if="cartStore.items.length === 0">
         <ion-icon :icon="cartOutline" class="empty-icon" />
-        <h3>Sepetiniz boş</h3>
-        <p>Ürün taramak için "Tara" sekmesini kullanın</p>
-        <ion-button router-link="/tabs/barcode">Ürün Tara</ion-button>
+        <h3>Your cart is empty</h3>
+        <p>Use the "Scan" tab to scan products</p>
+        <ion-button router-link="/tabs/barcode">Scan Product</ion-button>
       </div>
 
       <!-- Cart items -->
@@ -89,29 +89,29 @@
         <!-- Summary -->
         <div class="cart-summary">
           <div class="summary-row">
-            <span>Ürün Sayısı</span>
-            <strong>{{ cartStore.itemCount }} adet</strong>
+            <span>Items</span>
+            <strong>{{ cartStore.itemCount }} pcs</strong>
           </div>
           <div class="summary-row total">
-            <span>Toplam</span>
+            <span>Total</span>
             <strong>{{ cartStore.totalPrice.toFixed(2) }} ₺</strong>
           </div>
         </div>
 
         <!-- Payment method -->
-        <h4 style="margin: 16px 0 8px;">Ödeme Yöntemi</h4>
+        <h4 style="margin: 16px 0 8px;">Payment Method</h4>
         <ion-radio-group v-model="paymentMethod">
           <ion-item>
-            <ion-radio value="kart" label-placement="end">Kart ile Öde</ion-radio>
+            <ion-radio value="card" label-placement="end">Pay by Card</ion-radio>
           </ion-item>
           <ion-item>
-            <ion-radio value="nakit" label-placement="end">Kasada Nakit Öde</ion-radio>
+            <ion-radio value="cash" label-placement="end">Pay Cash at Register</ion-radio>
           </ion-item>
         </ion-radio-group>
 
         <ion-button expand="block" class="checkout-btn" :disabled="checkoutLoading" @click="handleCheckout">
           <ion-icon :icon="checkmarkOutline" slot="start" />
-          {{ checkoutLoading ? 'İşleniyor...' : `${cartStore.totalPrice.toFixed(2)} ₺ Öde` }}
+          {{ checkoutLoading ? 'Processing...' : `Pay ${cartStore.totalPrice.toFixed(2)} ₺` }}
         </ion-button>
       </template>
     </ion-content>
@@ -137,7 +137,7 @@ const router = useRouter()
 const cartStore = useCartStore()
 const authStore = useAuthStore()
 
-const paymentMethod = ref('kart')
+const paymentMethod = ref('card')
 const checkoutLoading = ref(false)
 const receipt = ref(null)
 
@@ -150,10 +150,10 @@ async function decreaseQty(item) {
 
 async function clearCart() {
   const alert = await alertController.create({
-    header: 'Sepeti Temizle', message: 'Tüm ürünler kaldırılacak. Emin misiniz?',
+    header: 'Clear Cart', message: 'All items will be removed. Are you sure?',
     buttons: [
-      { text: 'İptal', role: 'cancel' },
-      { text: 'Temizle', role: 'destructive', handler: () => cartStore.clearCart() }
+      { text: 'Cancel', role: 'cancel' },
+      { text: 'Clear', role: 'destructive', handler: () => cartStore.clearCart() }
     ]
   })
   await alert.present()
@@ -168,7 +168,7 @@ async function handleCheckout() {
     await authStore.fetchProfile()
   } catch (err) {
     const toast = await toastController.create({
-      message: err.response?.data?.detail || 'Ödeme başarısız',
+      message: err.response?.data?.detail || 'Payment failed',
       duration: 3000, color: 'danger', position: 'bottom'
     })
     await toast.present()
@@ -178,11 +178,11 @@ async function handleCheckout() {
 }
 
 function getPaymentLabel(method) {
-  return { 'kart': 'Kart', 'nakit': 'Nakit', 'cüzdan': 'Cüzdan' }[method] || method
+  return { 'card': 'Card', 'cash': 'Cash', 'wallet': 'Wallet' }[method] || method
 }
 
 function formatDate(d) {
-  return new Date(d).toLocaleDateString('tr-TR', {
+  return new Date(d).toLocaleDateString('en-US', {
     day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
   })
 }

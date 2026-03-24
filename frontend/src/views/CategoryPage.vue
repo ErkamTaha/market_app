@@ -3,7 +3,7 @@
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button default-href="/tabs/home" text="Geri" />
+          <ion-back-button default-href="/tabs/home" text="Back" />
         </ion-buttons>
         <ion-title>{{ categoryName }}</ion-title>
       </ion-toolbar>
@@ -15,7 +15,7 @@
       </div>
 
       <div class="empty" v-else-if="products.length === 0">
-        <p>Bu kategoride ürün bulunamadı</p>
+        <p>No products found in this category</p>
       </div>
 
       <div class="product-list" v-else>
@@ -66,7 +66,7 @@ async function loadCategory(id) {
       api.get('/products/', { params: { category_id: id } })
     ])
     const cat = catRes.data.find(c => c.id === parseInt(id))
-    categoryName.value = cat?.name || 'Kategori'
+    categoryName.value = cat?.name || 'Category'
     products.value = prodRes.data
   } catch (err) {
     console.error(err)
@@ -81,10 +81,10 @@ watch(() => route.params.id, (newId) => { if (newId) loadCategory(newId) })
 async function addToCart(product) {
   try {
     await cartStore.addToCart(product.id, 1)
-    const toast = await toastController.create({ message: `${product.name} sepete eklendi`, duration: 1500, color: 'success', position: 'bottom' })
+    const toast = await toastController.create({ message: `${product.name} added to cart`, duration: 1500, color: 'success', position: 'bottom' })
     await toast.present()
   } catch (err) {
-    const toast = await toastController.create({ message: err.response?.data?.detail || 'Eklenemedi', duration: 2000, color: 'danger', position: 'bottom' })
+    const toast = await toastController.create({ message: err.response?.data?.detail || 'Could not add', duration: 2000, color: 'danger', position: 'bottom' })
     await toast.present()
   }
 }

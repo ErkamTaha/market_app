@@ -13,7 +13,7 @@ from app.services.auth import get_current_user
 from app.services.pathfinding import find_path
 from datetime import datetime, timezone
 
-router = APIRouter(tags=["Navigasyon"])
+router = APIRouter(tags=["Navigation"])
 
 
 # =====================
@@ -36,7 +36,7 @@ def get_product_location(product_id: int, db: Session = Depends(get_db)):
         ProductLocation.product_id == product_id
     ).first()
     if not loc:
-        raise HTTPException(404, "Bu ürünün konumu henüz belirlenmemiş")
+        raise HTTPException(404, "This product's location has not been set yet")
     return loc
 
 
@@ -222,7 +222,7 @@ def update_zone(
     """Update a map zone's properties."""
     zone = db.query(MapZone).filter(MapZone.id == zone_id).first()
     if not zone:
-        raise HTTPException(404, "Bölge bulunamadı")
+        raise HTTPException(404, "Zone not found")
 
     for key, value in data.model_dump(exclude_unset=True).items():
         setattr(zone, key, value)
@@ -241,10 +241,10 @@ def delete_zone(
     """Delete a map zone."""
     zone = db.query(MapZone).filter(MapZone.id == zone_id).first()
     if not zone:
-        raise HTTPException(404, "Bölge bulunamadı")
+        raise HTTPException(404, "Zone not found")
     db.delete(zone)
     db.commit()
-    return {"message": f"'{zone.name}' silindi"}
+    return {"message": f"'{zone.name}' deleted"}
 
 
 @router.put("/admin/products/{product_id}/location", response_model=ProductLocationResponse)
@@ -260,7 +260,7 @@ def set_product_location(
     """
     product = db.query(Product).filter(Product.id == product_id).first()
     if not product:
-        raise HTTPException(404, "Ürün bulunamadı")
+        raise HTTPException(404, "Product not found")
 
     existing = db.query(ProductLocation).filter(
         ProductLocation.product_id == product_id
@@ -304,7 +304,7 @@ def remove_product_location(
         ProductLocation.product_id == product_id
     ).first()
     if not loc:
-        raise HTTPException(404, "Ürün konumu bulunamadı")
+        raise HTTPException(404, "Product location not found")
     db.delete(loc)
     db.commit()
-    return {"message": "Ürün konumu kaldırıldı"}
+    return {"message": "Product location removed"}

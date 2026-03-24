@@ -2,18 +2,18 @@
   <div class="login-page">
     <div class="login-card">
       <h1>Market</h1>
-      <p class="subtitle">Yönetim Paneli</p>
+      <p class="subtitle">Admin Panel</p>
       <form @submit.prevent="handleLogin">
         <div class="form-group">
-          <label>E-posta</label>
+          <label>Email</label>
           <input type="email" v-model="email" placeholder="admin@market.com" required />
         </div>
         <div class="form-group">
-          <label>Şifre</label>
+          <label>Password</label>
           <input type="password" v-model="password" placeholder="••••••••" required />
         </div>
         <button type="submit" class="btn btn-primary" :disabled="loading">
-          {{ loading ? 'Giriş yapılıyor...' : 'Giriş Yap' }}
+          {{ loading ? 'Signing in...' : 'Sign In' }}
         </button>
         <p class="error-msg" v-if="error">{{ error }}</p>
       </form>
@@ -40,7 +40,7 @@ async function handleLogin() {
     localStorage.setItem('market_admin_token', response.data.access_token)
     router.push('/')
   } catch (err) {
-    error.value = 'Geçersiz e-posta veya şifre'
+    error.value = 'Invalid email or password'
   } finally {
     loading.value = false
   }

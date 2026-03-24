@@ -32,7 +32,7 @@ export const useCartStore = defineStore('cart', () => {
       const response = await api.get('/cart/')
       items.value = response.data
     } catch (err) {
-      console.error('Sepet yüklenemedi:', err)
+      console.error('Failed to load cart:', err)
     } finally {
       loading.value = false
     }

@@ -24,15 +24,15 @@ def get_stats(
     total_categories = db.query(func.count(Category.id)).filter(Category.is_active == True).scalar()
 
     total_purchases = db.query(func.count(Purchase.id)).scalar()
-    paid_purchases = db.query(func.count(Purchase.id)).filter(Purchase.status == "ödendi").scalar()
-    cancelled_purchases = db.query(func.count(Purchase.id)).filter(Purchase.status == "iptal").scalar()
+    paid_purchases = db.query(func.count(Purchase.id)).filter(Purchase.status == "paid").scalar()
+    cancelled_purchases = db.query(func.count(Purchase.id)).filter(Purchase.status == "cancelled").scalar()
 
     total_revenue = db.query(func.coalesce(func.sum(Purchase.total_price), 0)).filter(
-        Purchase.status == "ödendi"
+        Purchase.status == "paid"
     ).scalar()
 
     total_items_sold = db.query(func.coalesce(func.sum(Purchase.item_count), 0)).filter(
-        Purchase.status == "ödendi"
+        Purchase.status == "paid"
     ).scalar()
 
     low_stock = db.query(func.count(Product.id)).filter(
@@ -119,7 +119,7 @@ def update_stock(
 ):
     product = db.query(Product).filter(Product.id == product_id).first()
     if not product:
-        raise HTTPException(404, "Ürün bulunamadı")
+        raise HTTPException(404, "Product not found")
     product.stock = update.stock
     product.is_in_stock = update.stock > 0
     db.commit()

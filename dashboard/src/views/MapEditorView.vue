@@ -1,21 +1,21 @@
 <template>
   <div>
     <div class="page-header">
-      <h1>Harita Editörü</h1>
-      <p>Ürünleri haritada konumlandırın — tıklayarak yerleştirin</p>
+      <h1>Map Editor</h1>
+      <p>Place products on the map — click to position</p>
     </div>
 
-    <div class="loading" v-if="loading">Yükleniyor...</div>
+    <div class="loading" v-if="loading">Loading...</div>
 
     <div class="editor-layout" v-else>
       <!-- Left: Canvas Map -->
       <div class="map-panel">
         <div class="map-toolbar">
           <span class="toolbar-info">
-            Yerleştirilmiş: {{ placedCount }}/{{ products.length }} ürün
+            Placed: {{ placedCount }}/{{ products.length }} products
           </span>
           <span class="toolbar-info" v-if="selectedProduct">
-            Seçili: <strong>{{ selectedProduct.name }}</strong> — haritaya tıklayın
+            Selected: <strong>{{ selectedProduct.name }}</strong> — click on map to place
           </span>
         </div>
         <canvas
@@ -35,16 +35,16 @@
 
       <!-- Right: Product List -->
       <div class="product-panel">
-        <h3>Ürünler</h3>
+        <h3>Products</h3>
         <input
           v-model="searchQuery"
-          placeholder="Ürün ara..."
+          placeholder="Search products..."
           class="search-input"
         />
 
         <!-- Unplaced products first -->
         <div class="product-section" v-if="unplacedProducts.length > 0">
-          <h4 class="section-label warning">Konumsuz ({{ unplacedProducts.length }})</h4>
+          <h4 class="section-label warning">Unplaced ({{ unplacedProducts.length }})</h4>
           <div
             v-for="p in unplacedProducts"
             :key="p.id"
@@ -59,7 +59,7 @@
 
         <!-- Placed products -->
         <div class="product-section">
-          <h4 class="section-label success">Yerleştirilmiş ({{ placedProducts.length }})</h4>
+          <h4 class="section-label success">Placed ({{ placedProducts.length }})</h4>
           <div
             v-for="p in placedProducts"
             :key="p.id"
@@ -77,13 +77,13 @@
           <h4>{{ selectedProduct.name }}</h4>
           <p>{{ selectedProduct.brand }} · {{ selectedProduct.category }}</p>
           <p v-if="getLocation(selectedProduct.id)">
-            Konum: ({{ getLocation(selectedProduct.id).x.toFixed(0) }}, {{ getLocation(selectedProduct.id).y.toFixed(0) }})
+            Location: ({{ getLocation(selectedProduct.id).x.toFixed(0) }}, {{ getLocation(selectedProduct.id).y.toFixed(0) }})
           </p>
           <button
             v-if="getLocation(selectedProduct.id)"
             class="btn btn-sm btn-danger"
             @click="removeLocation(selectedProduct.id)"
-          >Konumu Kaldır</button>
+          >Remove Location</button>
         </div>
       </div>
     </div>
@@ -164,7 +164,7 @@ onMounted(async () => {
     productLocations.value = locsRes.data
     products.value = prodsRes.data
   } catch (err) {
-    console.error('Harita verisi yüklenemedi:', err)
+    console.error('Failed to load map data:', err)
   } finally {
     loading.value = false
   }
@@ -243,7 +243,7 @@ async function handleCanvasClick(event) {
       productLocations.value = locsRes.data
       selectedProduct.value = null
     } catch (err) {
-      alert('Konum kaydedilemedi: ' + (err.response?.data?.detail || err.message))
+      alert('Failed to save location: ' + (err.response?.data?.detail || err.message))
     }
     return
   }
@@ -272,7 +272,7 @@ async function removeLocation(productId) {
     productLocations.value = locsRes.data
     selectedProduct.value = null
   } catch (err) {
-    alert('Konum kaldırılamadı')
+    alert('Failed to remove location')
   }
 }
 </script>

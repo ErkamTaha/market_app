@@ -27,14 +27,14 @@ class Purchase(Base):
     receipt_code = Column(String, unique=True, index=True, nullable=False,
                           default=lambda: f"MKT-{uuid.uuid4().hex[:8].upper()}")
 
-    # Payment method: "kart" (card in-app), "nakit" (cash at register), "cüzdan" (wallet)
-    payment_method = Column(String, default="kart")
+    # Payment method: "card" (card in-app), "cash" (cash at register), "wallet" (wallet)
+    payment_method = Column(String, default="card")
 
     # Which market location
     store_name = Column(String, default="Market Çerkezköy")
 
-    # Status: "ödendi" (paid) or "iptal" (cancelled/refunded)
-    status = Column(String, default="ödendi")
+    # Status: "paid" or "cancelled" (refunded)
+    status = Column(String, default="paid")
 
     # Loyalty points earned from this purchase
     points_earned = Column(Integer, default=0)

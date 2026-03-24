@@ -7,7 +7,7 @@ from app.models.user import User
 from app.schemas.order import PurchaseResponse, CheckoutRequest
 from app.services.auth import get_current_user
 
-router = APIRouter(prefix="/purchases", tags=["Alışverişler"])
+router = APIRouter(prefix="/purchases", tags=["Purchases"])
 
 
 @router.post("/checkout", response_model=PurchaseResponse, status_code=status.HTTP_201_CREATED)
@@ -34,7 +34,7 @@ def checkout(
     ).filter(CartItem.user_id == current_user.id).all()
 
     if not cart_items:
-        raise HTTPException(status_code=400, detail="Sepetiniz boş")
+        raise HTTPException(status_code=400, detail="Your cart is empty")
 
     total = 0.0
     purchase_items = []
@@ -45,7 +45,7 @@ def checkout(
         if not product.is_in_stock or product.stock < cart_item.quantity:
             raise HTTPException(
                 status_code=400,
-                detail=f"'{product.name}' için yeterli stok yok (stok: {product.stock})"
+                detail=f"Insufficient stock for '{product.name}' (stock: {product.stock})"
             )
 
         price = product.discount_price if product.discount_price else product.price
@@ -74,7 +74,7 @@ def checkout(
         total_price=round(total, 2),
         item_count=sum(item.quantity for item in purchase_items),
         payment_method=data.payment_method,
-        status="ödendi",
+        status="paid",
         points_earned=points
     )
     db.add(purchase)
@@ -128,5 +128,5 @@ def get_receipt(
     ).filter(Purchase.receipt_code == receipt_code).first()
 
     if not purchase:
-        raise HTTPException(status_code=404, detail="Fiş bulunamadı")
+        raise HTTPException(status_code=404, detail="Receipt not found")
     return purchase

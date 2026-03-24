@@ -1,49 +1,49 @@
 <template>
   <div>
     <div class="page-header">
-      <h1>Ürünler</h1>
-      <p>Stok yönetimi ve ürün listesi</p>
+      <h1>Products</h1>
+      <p>Stock management and product list</p>
     </div>
 
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-label">Toplam Ürün</div>
+        <div class="stat-label">Total Products</div>
         <div class="stat-value green">{{ products.length }}</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Stokta</div>
+        <div class="stat-label">In Stock</div>
         <div class="stat-value blue">{{ products.filter(p => p.is_in_stock).length }}</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Düşük Stok (≤10)</div>
+        <div class="stat-label">Low Stock (≤10)</div>
         <div class="stat-value yellow">{{ products.filter(p => p.stock <= 10 && p.stock > 0).length }}</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Tükenen</div>
+        <div class="stat-label">Out of Stock</div>
         <div class="stat-value red">{{ products.filter(p => p.stock === 0).length }}</div>
       </div>
     </div>
 
-    <div class="loading" v-if="loading">Yükleniyor...</div>
+    <div class="loading" v-if="loading">Loading...</div>
 
     <div class="card" v-else>
       <!-- Search -->
       <div style="margin-bottom: 16px;">
-        <input v-model="search" placeholder="Ürün veya marka ara..." style="width:300px; padding:10px 16px; border:2px solid #e2e8f0; border-radius:8px; font-size:14px; outline:none;" />
+        <input v-model="search" placeholder="Search product or brand..." style="width:300px; padding:10px 16px; border:2px solid #e2e8f0; border-radius:8px; font-size:14px; outline:none;" />
       </div>
 
       <table>
         <thead>
           <tr>
-            <th>Ürün</th>
-            <th>Marka</th>
-            <th>Kategori</th>
-            <th>Fiyat</th>
-            <th>İndirimli</th>
-            <th>Birim</th>
-            <th>Barkod</th>
-            <th>Stok</th>
-            <th>Durum</th>
+            <th>Product</th>
+            <th>Brand</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Sale Price</th>
+            <th>Unit</th>
+            <th>Barcode</th>
+            <th>Stock</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -70,9 +70,9 @@
               </div>
             </td>
             <td>
-              <span v-if="p.stock === 0" class="badge badge-danger">Tükendi</span>
-              <span v-else-if="p.stock <= 10" class="badge badge-warning">Düşük</span>
-              <span v-else class="badge badge-success">Stokta</span>
+              <span v-if="p.stock === 0" class="badge badge-danger">Out of Stock</span>
+              <span v-else-if="p.stock <= 10" class="badge badge-warning">Low</span>
+              <span v-else class="badge badge-success">In Stock</span>
             </td>
           </tr>
         </tbody>
@@ -116,7 +116,7 @@ async function updateStock(productId, newStock) {
     await api.patch(`/admin/products/${productId}/stock`, { stock: parseInt(newStock) })
     await fetchProducts()
   } catch (err) {
-    alert('Stok güncellenemedi')
+    alert('Failed to update stock')
   }
 }
 </script>

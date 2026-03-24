@@ -28,4 +28,4 @@ class PurchaseResponse(BaseModel):
 
 
 class CheckoutRequest(BaseModel):
-    payment_method: str = "kart"  # kart, nakit, cüzdan
+    payment_method: str = "card"  # card, cash, wallet

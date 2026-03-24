@@ -6,7 +6,7 @@ from app.database import Base
 
 class Category(Base):
     """
-    Product categories — e.g., Meyve & Sebze, Süt Ürünleri, İçecekler.
+    Product categories — e.g., Fruits & Vegetables, Dairy, Beverages.
 
     Categories organize the product catalog. A supermarket might have
     10-20 top-level categories. For the prototype, we keep it flat
@@ -48,7 +48,7 @@ class Product(Base):
     # Discounted price — if set, shown as the sale price with original crossed out
     discount_price = Column(Float, nullable=True)
 
-    # Unit of measurement: "kg", "adet" (piece), "litre", "paket" (pack)
+    # Unit of measurement: "kg", "adet" (piece), "litre", "paket" (package)
     unit = Column(String, default="adet")
 
     # Barcode — for scanning at the market. EAN-13 format (13 digits).

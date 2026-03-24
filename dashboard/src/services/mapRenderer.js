@@ -8,14 +8,14 @@
 
 // Category colors for product pins
 const CATEGORY_COLORS = {
-  1: '#16a34a',  // Meyve & Sebze — green
-  2: '#2563eb',  // Süt Ürünleri — blue
-  3: '#dc2626',  // Et & Tavuk — red
-  4: '#ca8a04',  // Ekmek & Fırın — amber
-  5: '#0891b2',  // İçecekler — cyan
-  6: '#ea580c',  // Atıştırmalık — orange
-  7: '#0d9488',  // Temizlik — teal
-  8: '#7c3aed',  // Kişisel Bakım — violet
+  1: '#16a34a',  // Fruits & Vegetables — green
+  2: '#2563eb',  // Dairy — blue
+  3: '#dc2626',  // Meat & Poultry — red
+  4: '#ca8a04',  // Bread & Bakery — amber
+  5: '#0891b2',  // Beverages — cyan
+  6: '#ea580c',  // Snacks — orange
+  7: '#0d9488',  // Cleaning — teal
+  8: '#7c3aed',  // Personal Care — violet
 }
 
 /**

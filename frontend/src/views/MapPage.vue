@@ -2,13 +2,13 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-title>Mağaza Haritası</ion-title>
+        <ion-title>Store Map</ion-title>
       </ion-toolbar>
       <!-- Search bar -->
       <ion-toolbar>
         <ion-searchbar
           v-model="searchQuery"
-          placeholder="Ürün ara ve haritada bul..."
+          placeholder="Search product and find on map..."
           @ionInput="handleSearch"
           debounce="300"
         />
@@ -29,7 +29,7 @@
             <span>{{ r.brand }} · {{ r.discount_price || r.price }} ₺</span>
           </div>
           <ion-icon :icon="navigateOutline" color="primary" v-if="r.location" />
-          <span v-else class="no-loc">Konum yok</span>
+          <span v-else class="no-loc">No location</span>
         </div>
       </div>
 
@@ -46,12 +46,12 @@
       <div class="nav-info" v-if="targetProduct">
         <div class="nav-product">
           <strong>{{ targetProduct.product_name }}</strong>
-          <span v-if="navPath">{{ navPath.distance.toFixed(0) }}m · ~{{ navPath.estimated_seconds }} saniye</span>
+          <span v-if="navPath">{{ navPath.distance.toFixed(0) }}m · ~{{ navPath.estimated_seconds }} sec</span>
         </div>
         <div class="nav-actions">
           <ion-button size="small" fill="outline" @click="addTargetToCart">
             <ion-icon :icon="cartOutline" slot="start" />
-            Sepete Ekle
+            Add to Cart
           </ion-button>
           <ion-button size="small" color="medium" fill="clear" @click="clearNavigation">
             <ion-icon :icon="closeOutline" slot="icon-only" />
@@ -62,7 +62,7 @@
       <!-- Draggable position hint -->
       <div class="position-hint" v-if="!targetProduct">
         <ion-icon :icon="fingerPrintOutline" />
-        <span>Mavi noktayı sürükleyerek konumunuzu ayarlayın</span>
+        <span>Drag the blue dot to set your position</span>
       </div>
     </ion-content>
   </ion-page>
@@ -111,7 +111,7 @@ onMounted(async () => {
     zones.value = zonesData
     productLocations.value = locsData
   } catch (err) {
-    console.error('Harita yüklenemedi:', err)
+    console.error('Failed to load map:', err)
   }
 
   await nextTick()
@@ -187,7 +187,7 @@ async function navigateToProduct(product) {
 
   if (!product.location) {
     const toast = await toastController.create({
-      message: 'Bu ürünün konumu henüz belirlenmemiş', duration: 2000, color: 'warning', position: 'bottom'
+      message: 'This product\'s location has not been set yet', duration: 2000, color: 'warning', position: 'bottom'
     })
     await toast.present()
     return
@@ -204,7 +204,7 @@ async function calculatePath(toX, toY) {
   try {
     navPath.value = await getNavigationPath(positionStore.x, positionStore.y, toX, toY)
   } catch (err) {
-    console.error('Yol hesaplanamadı:', err)
+    console.error('Failed to calculate path:', err)
   }
 }
 
@@ -283,12 +283,12 @@ async function addTargetToCart() {
   try {
     await cartStore.addToCart(targetProduct.value.product_id, 1)
     const toast = await toastController.create({
-      message: `${targetProduct.value.product_name} sepete eklendi`, duration: 1500, color: 'success', position: 'bottom'
+      message: `${targetProduct.value.product_name} added to cart`, duration: 1500, color: 'success', position: 'bottom'
     })
     await toast.present()
   } catch (err) {
     const toast = await toastController.create({
-      message: 'Eklenemedi', duration: 2000, color: 'danger', position: 'bottom'
+      message: 'Could not add', duration: 2000, color: 'danger', position: 'bottom'
     })
     await toast.present()
   }

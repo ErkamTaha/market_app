@@ -4,21 +4,21 @@
       <div class="auth-container">
         <div class="auth-header">
           <h1>Market</h1>
-          <p>Tekrar hoş geldiniz</p>
+          <p>Welcome back</p>
         </div>
         <form @submit.prevent="handleLogin">
           <ion-item>
-            <ion-input v-model="form.email" type="email" label="E-posta" label-placement="floating" required />
+            <ion-input v-model="form.email" type="email" label="Email" label-placement="floating" required />
           </ion-item>
           <ion-item>
-            <ion-input v-model="form.password" type="password" label="Şifre" label-placement="floating" required />
+            <ion-input v-model="form.password" type="password" label="Password" label-placement="floating" required />
           </ion-item>
           <ion-button expand="block" type="submit" :disabled="loading" class="ion-margin-top">
-            {{ loading ? 'Giriş yapılıyor...' : 'Giriş Yap' }}
+            {{ loading ? 'Signing in...' : 'Sign In' }}
           </ion-button>
         </form>
         <ion-text color="danger" v-if="error"><p class="ion-text-center">{{ error }}</p></ion-text>
-        <p class="ion-text-center">Hesabınız yok mu? <router-link to="/register">Kayıt Ol</router-link></p>
+        <p class="ion-text-center">Don't have an account? <router-link to="/register">Sign Up</router-link></p>
       </div>
     </ion-content>
   </ion-page>
@@ -43,7 +43,7 @@ async function handleLogin() {
     await authStore.login(form.value.email, form.value.password)
     router.push({ path: '/tabs/home', replace: true })
   } catch (err) {
-    error.value = err.response?.data?.detail || 'Giriş başarısız'
+    error.value = err.response?.data?.detail || 'Login failed'
   } finally {
     loading.value = false
   }

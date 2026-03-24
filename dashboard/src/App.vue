@@ -3,7 +3,7 @@
     <aside class="sidebar">
       <div class="sidebar-brand">
         <h2>Market</h2>
-        <span class="brand-sub">Yönetim Paneli</span>
+        <span class="brand-sub">Admin Panel</span>
       </div>
       <nav class="sidebar-nav">
         <router-link v-for="item in navItems" :key="item.path" :to="item.path"
@@ -11,7 +11,7 @@
           {{ item.label }}
         </router-link>
       </nav>
-      <button class="logout-btn" @click="logout">Çıkış Yap</button>
+      <button class="logout-btn" @click="logout">Sign Out</button>
     </aside>
     <main class="main-content">
       <router-view :key="$route.fullPath" />
@@ -31,10 +31,10 @@ const route = useRoute()
 const isLoggedIn = ref(!!localStorage.getItem('market_admin_token'))
 
 const navItems = [
-  { path: '/', label: 'Genel Bakış' },
-  { path: '/orders', label: 'Satışlar' },
-  { path: '/products', label: 'Ürünler' },
-  { path: '/map', label: 'Harita' },
+  { path: '/', label: 'Overview' },
+  { path: '/orders', label: 'Sales' },
+  { path: '/products', label: 'Products' },
+  { path: '/map', label: 'Map' },
 ]
 
 watch(() => route.path, () => {

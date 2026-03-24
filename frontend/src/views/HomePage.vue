@@ -8,10 +8,10 @@
 
     <ion-content class="ion-padding">
       <div class="welcome" v-if="authStore.user">
-        <h2>Merhaba, {{ authStore.user.full_name.split(' ')[0] }}!</h2>
+        <h2>Hello, {{ authStore.user.full_name.split(' ')[0] }}!</h2>
         <div class="points-badge">
           <ion-icon :icon="starOutline" />
-          {{ authStore.user.loyalty_points }} puan
+          {{ authStore.user.loyalty_points }} points
         </div>
       </div>
 
@@ -20,28 +20,28 @@
         <ion-icon :icon="locationOutline" class="store-icon" />
         <div>
           <strong>Market Çerkezköy</strong>
-          <p>Mağazadasınız — Ürünleri tarayarak alışveriş yapın</p>
+          <p>You are in the store — Scan products to start shopping</p>
         </div>
       </div>
 
       <!-- Scan & Go button -->
       <ion-button expand="block" class="scan-go-btn" router-link="/tabs/barcode">
         <ion-icon :icon="barcodeOutline" slot="start" />
-        Ürün Tara ve Alışverişe Başla
+        Scan Product & Start Shopping
       </ion-button>
 
       <!-- On sale banner -->
       <div class="sale-banner" @click="router.push('/tabs/search?on_sale=true')">
         <ion-icon :icon="pricetagOutline" class="sale-icon" />
         <div>
-          <strong>İndirimli Ürünler</strong>
-          <p>Fırsatları kaçırmayın!</p>
+          <strong>On Sale</strong>
+          <p>Don't miss the deals!</p>
         </div>
         <ion-icon :icon="chevronForwardOutline" />
       </div>
 
       <!-- Categories grid -->
-      <h3 class="section-title">Kategoriler</h3>
+      <h3 class="section-title">Categories</h3>
       <div class="ion-text-center" v-if="loading">
         <ion-spinner name="crescent" />
       </div>
@@ -58,7 +58,7 @@
       </ion-grid>
 
       <!-- Featured products (on sale) -->
-      <h3 class="section-title">Fırsat Ürünleri</h3>
+      <h3 class="section-title">Deals</h3>
       <div class="product-scroll">
         <div
           v-for="p in saleProducts"
@@ -151,13 +151,13 @@ async function addToCart(product) {
   try {
     await cartStore.addToCart(product.id, 1)
     const toast = await toastController.create({
-      message: `${product.name} sepete eklendi`,
+      message: `${product.name} added to cart`,
       duration: 1500, color: 'success', position: 'bottom'
     })
     await toast.present()
   } catch (err) {
     const toast = await toastController.create({
-      message: err.response?.data?.detail || 'Eklenemedi',
+      message: err.response?.data?.detail || 'Could not add',
       duration: 2000, color: 'danger', position: 'bottom'
     })
     await toast.present()

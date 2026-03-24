@@ -3,9 +3,9 @@
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button default-href="/tabs/home" text="Geri" />
+          <ion-back-button default-href="/tabs/home" text="Back" />
         </ion-buttons>
-        <ion-title>{{ product?.name || 'Ürün' }}</ion-title>
+        <ion-title>{{ product?.name || 'Product' }}</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -35,9 +35,9 @@
 
           <div class="stock-info">
             <ion-badge :color="product.is_in_stock ? 'success' : 'danger'">
-              {{ product.is_in_stock ? 'Stokta' : 'Tükendi' }}
+              {{ product.is_in_stock ? 'In Stock' : 'Out of Stock' }}
             </ion-badge>
-            <span class="stock-count" v-if="product.is_in_stock">{{ product.stock }} adet mevcut</span>
+            <span class="stock-count" v-if="product.is_in_stock">{{ product.stock }} available</span>
           </div>
 
           <div class="barcode" v-if="product.barcode">
@@ -48,12 +48,12 @@
           <!-- Find on map -->
           <ion-button expand="block" fill="outline" color="primary" class="find-btn" @click="router.push(`/tabs/map?product_id=${product.id}`)">
             <ion-icon :icon="mapOutline" slot="start" />
-            Markette Bul
+            Find in Store
           </ion-button>
 
           <!-- Quantity selector -->
           <div class="qty-section" v-if="product.is_in_stock">
-            <span class="qty-label">Adet:</span>
+            <span class="qty-label">Qty:</span>
             <div class="qty-controls">
               <ion-button fill="outline" size="small" @click="qty > 1 && qty--">
                 <ion-icon :icon="removeOutline" slot="icon-only" />
@@ -72,7 +72,7 @@
             @click="addToCart"
           >
             <ion-icon :icon="cartOutline" slot="start" />
-            {{ product.is_in_stock ? `Sepete Ekle — ${((product.discount_price || product.price) * qty).toFixed(2)} ₺` : 'Stokta Yok' }}
+            {{ product.is_in_stock ? `Add to Cart — ${((product.discount_price || product.price) * qty).toFixed(2)} ₺` : 'Out of Stock' }}
           </ion-button>
         </div>
       </template>
@@ -114,14 +114,14 @@ async function addToCart() {
   try {
     await cartStore.addToCart(product.value.id, qty.value)
     const toast = await toastController.create({
-      message: `${qty.value}x ${product.value.name} sepete eklendi`,
+      message: `${qty.value}x ${product.value.name} added to cart`,
       duration: 2000, color: 'success', position: 'bottom'
     })
     await toast.present()
     router.back()
   } catch (err) {
     const toast = await toastController.create({
-      message: err.response?.data?.detail || 'Eklenemedi',
+      message: err.response?.data?.detail || 'Could not add',
       duration: 2000, color: 'danger', position: 'bottom'
     })
     await toast.present()

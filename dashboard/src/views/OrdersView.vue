@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="page-header">
-      <h1>Satışlar</h1>
-      <p>Tüm müşteri alışverişleri ve fişler</p>
+      <h1>Sales</h1>
+      <p>All customer purchases and receipts</p>
     </div>
 
     <div class="filter-bar">
@@ -13,20 +13,20 @@
       </button>
     </div>
 
-    <div class="loading" v-if="loading">Yükleniyor...</div>
+    <div class="loading" v-if="loading">Loading...</div>
 
     <div class="card" v-else>
       <table>
         <thead>
           <tr>
-            <th>Fiş No</th>
-            <th>Müşteri</th>
-            <th>Ürünler</th>
-            <th>Tutar</th>
-            <th>Ödeme</th>
-            <th>Puan</th>
-            <th>Tarih</th>
-            <th>Durum</th>
+            <th>Receipt No</th>
+            <th>Customer</th>
+            <th>Products</th>
+            <th>Amount</th>
+            <th>Payment</th>
+            <th>Points</th>
+            <th>Date</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -46,13 +46,13 @@
             <td>+{{ p.points_earned }}</td>
             <td>{{ formatDate(p.created_at) }}</td>
             <td>
-              <span class="badge" :class="p.status === 'ödendi' ? 'badge-success' : 'badge-danger'">
-                {{ p.status === 'ödendi' ? 'Ödendi' : 'İptal' }}
+              <span class="badge" :class="p.status === 'paid' ? 'badge-success' : 'badge-danger'">
+                {{ p.status === 'paid' ? 'Paid' : 'Cancelled' }}
               </span>
             </td>
           </tr>
           <tr v-if="filteredPurchases.length === 0">
-            <td colspan="8" style="text-align:center; color:#94a3b8; padding:40px;">Bu filtreye uygun satış yok</td>
+            <td colspan="8" style="text-align:center; color:#94a3b8; padding:40px;">No sales matching this filter</td>
           </tr>
         </tbody>
       </table>
@@ -69,9 +69,9 @@ const loading = ref(true)
 const activeFilter = ref('all')
 
 const filters = [
-  { label: 'Tümü', value: 'all' },
-  { label: 'Ödendi', value: 'ödendi' },
-  { label: 'İptal', value: 'iptal' }
+  { label: 'All', value: 'all' },
+  { label: 'Paid', value: 'paid' },
+  { label: 'Cancelled', value: 'cancelled' }
 ]
 
 const filteredPurchases = computed(() => {
@@ -95,11 +95,11 @@ onMounted(async () => {
 
 function formatDate(d) {
   if (!d) return '-'
-  return new Date(d).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+  return new Date(d).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
 function getPaymentLabel(m) {
-  return { 'kart': 'Kart', 'nakit': 'Nakit', 'cüzdan': 'Cüzdan' }[m] || m
+  return { 'card': 'Card', 'cash': 'Cash', 'wallet': 'Wallet' }[m] || m
 }
 </script>
 

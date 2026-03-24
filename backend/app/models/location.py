@@ -25,7 +25,7 @@ class MapZone(Base):
     __tablename__ = "map_zones"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)           # "Reyon 1 — Meyve & Sebze"
+    name = Column(String, nullable=False)           # e.g., "Shelf 1 — Fruits & Vegetables"
     zone_type = Column(String, nullable=False)       # shelf, aisle, entrance, checkout, wall
 
     # Rectangle position on the 2D map (top-left corner + dimensions)
@@ -76,7 +76,7 @@ class ProductLocation(Base):
     # Shelf height — 0=floor level, 1.5=eye level, etc. (for future 3D)
     z = Column(Float, default=1.0)
 
-    # Human-readable description: "Reyon 3, Raf 2"
+    # Human-readable description: "Shelf 3, Row 2"
     shelf_label = Column(String)
 
     # When this location was last updated (tracks restocking)

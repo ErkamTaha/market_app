@@ -15,7 +15,7 @@ from app.services.auth import hash_password
 Base.metadata.create_all(bind=engine)
 db = SessionLocal()
 
-print("=== Market Demo Veri Oluşturucu ===\n")
+print("=== Market Demo Data Generator ===\n")
 
 # --- USERS ---
 demo_users = [
@@ -31,7 +31,7 @@ created_users = []
 for u in demo_users:
     existing = db.query(User).filter(User.email == u["email"]).first()
     if existing:
-        print(f"  Kullanıcı zaten var: {u['full_name']}")
+        print(f"  User already exists: {u['full_name']}")
         created_users.append(existing)
         continue
     user = User(email=u["email"], phone=u["phone"], full_name=u["full_name"],
@@ -42,26 +42,26 @@ for u in demo_users:
     created_users.append(user)
     print(f"  ✓ {u['full_name']}")
 
-print(f"\n  Toplam: {len(created_users)} kullanıcı\n")
+print(f"\n  Total: {len(created_users)} users\n")
 
 # --- PURCHASES ---
 products = db.query(Product).all()
 if not products:
-    print("  ⚠ Ürün yok!"); sys.exit(1)
+    print("  ⚠ No products found!"); sys.exit(1)
 
 now = datetime.now(timezone.utc)
-payment_methods = ["kart", "kart", "kart", "nakit", "nakit"]
+payment_methods = ["card", "card", "card", "cash", "cash"]
 
 scenarios = [
-    (0, 4, "ödendi", 5), (0, 2, "ödendi", 3), (0, 6, "ödendi", 0),
-    (1, 3, "ödendi", 7), (1, 5, "ödendi", 1),
-    (2, 8, "ödendi", 4), (2, 3, "ödendi", 2), (2, 4, "ödendi", 0), (2, 2, "iptal", 1),
-    (3, 3, "ödendi", 6), (3, 5, "ödendi", 0),
-    (4, 2, "ödendi", 8), (4, 4, "ödendi", 3), (4, 3, "ödendi", 0),
-    (5, 6, "ödendi", 5), (5, 4, "ödendi", 2), (5, 7, "ödendi", 0), (5, 2, "iptal", 1),
+    (0, 4, "paid", 5), (0, 2, "paid", 3), (0, 6, "paid", 0),
+    (1, 3, "paid", 7), (1, 5, "paid", 1),
+    (2, 8, "paid", 4), (2, 3, "paid", 2), (2, 4, "paid", 0), (2, 2, "cancelled", 1),
+    (3, 3, "paid", 6), (3, 5, "paid", 0),
+    (4, 2, "paid", 8), (4, 4, "paid", 3), (4, 3, "paid", 0),
+    (5, 6, "paid", 5), (5, 4, "paid", 2), (5, 7, "paid", 0), (5, 2, "cancelled", 1),
 ]
 
-print("Satışlar oluşturuluyor...")
+print("Creating sales...")
 for user_idx, num_items, status, days_ago in scenarios:
     user = created_users[user_idx]
     purchase_date = now - timedelta(days=days_ago, hours=random.randint(1, 12))
@@ -84,7 +84,7 @@ for user_idx, num_items, status, days_ago in scenarios:
         receipt_code=f"MKT-{uuid.uuid4().hex[:8].upper()}",
         payment_method=random.choice(payment_methods),
         store_name="Market Çerkezköy", status=status,
-        points_earned=points if status == "ödendi" else 0,
+        points_earned=points if status == "paid" else 0,
         created_at=purchase_date
     )
     db.add(purchase); db.flush()
@@ -92,8 +92,8 @@ for user_idx, num_items, status, days_ago in scenarios:
         item.purchase_id = purchase.id; db.add(item)
 
 db.commit()
-print(f"  ✓ {len(scenarios)} satış oluşturuldu")
+print(f"  ✓ {len(scenarios)} sales created")
 
 db.close()
-print(f"\n{'='*50}\nDemo verileri oluşturuldu!\n{'='*50}")
-print(f"\nGiriş: erkam@market.com / demo1234")
+print(f"\n{'='*50}\nDemo data created!\n{'='*50}")
+print(f"\nLogin: erkam@market.com / demo1234")

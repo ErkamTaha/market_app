@@ -3,9 +3,9 @@
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button default-href="/tabs/home" text="Geri" />
+          <ion-back-button default-href="/tabs/home" text="Back" />
         </ion-buttons>
-        <ion-title>Barkod Tara</ion-title>
+        <ion-title>Scan Barcode</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -14,18 +14,18 @@
       <div class="scanner-area">
         <div class="scanner-frame">
           <ion-icon :icon="barcodeOutline" class="scan-icon" />
-          <p>Barkodu Tarayın</p>
+          <p>Scan Barcode</p>
         </div>
       </div>
 
       <!-- Demo: manual barcode entry -->
       <ion-card class="demo-card">
         <ion-card-header>
-          <ion-card-subtitle>Prototip Demo</ion-card-subtitle>
-          <ion-card-title>Barkod Girin</ion-card-title>
+          <ion-card-subtitle>Prototype Demo</ion-card-subtitle>
+          <ion-card-title>Enter Barcode</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <p class="demo-note">Gerçek uygulamada kamera ile barkod taranacak. Demo için aşağıdan bir ürün seçin:</p>
+          <p class="demo-note">In the real app, the camera will scan barcodes. For the demo, select a product below:</p>
 
           <!-- Quick select barcodes -->
           <div class="barcode-chips">
@@ -41,7 +41,7 @@
 
           <!-- Manual input -->
           <ion-item>
-            <ion-input v-model="manualBarcode" placeholder="Barkod numarası girin" inputmode="numeric" @keyup.enter="scanBarcode(manualBarcode)" />
+            <ion-input v-model="manualBarcode" placeholder="Enter barcode number" inputmode="numeric" @keyup.enter="scanBarcode(manualBarcode)" />
             <ion-button slot="end" fill="clear" @click="scanBarcode(manualBarcode)">
               <ion-icon :icon="searchOutline" />
             </ion-button>
@@ -65,7 +65,7 @@
 
           <div class="result-stock">
             <ion-badge :color="product.is_in_stock ? 'success' : 'danger'">
-              {{ product.is_in_stock ? `Stokta (${product.stock})` : 'Tükendi' }}
+              {{ product.is_in_stock ? `In Stock (${product.stock})` : 'Out of Stock' }}
             </ion-badge>
           </div>
 
@@ -87,11 +87,11 @@
             </div>
             <ion-button @click="addToCart" color="success">
               <ion-icon :icon="cartOutline" slot="start" />
-              Sepete Ekle
+              Add to Cart
             </ion-button>
             <ion-button fill="outline" @click="router.push(`/tabs/map?product_id=${product.id}`)">
               <ion-icon :icon="mapOutline" slot="start" />
-              Haritada Göster
+              Show on Map
             </ion-button>
           </div>
         </ion-card-content>
@@ -151,9 +151,9 @@ async function scanBarcode(barcode) {
     product.value = res.data
   } catch (err) {
     if (err.response?.status === 404) {
-      error.value = `"${barcode}" barkoduna ait ürün bulunamadı`
+      error.value = `No product found for barcode "${barcode}"`
     } else {
-      error.value = 'Ürün bilgisi alınamadı'
+      error.value = 'Could not retrieve product info'
     }
   }
 }
@@ -162,13 +162,13 @@ async function addToCart() {
   try {
     await cartStore.addToCart(product.value.id, qty.value)
     const toast = await toastController.create({
-      message: `${qty.value}x ${product.value.name} sepete eklendi`,
+      message: `${qty.value}x ${product.value.name} added to cart`,
       duration: 2000, color: 'success', position: 'bottom'
     })
     await toast.present()
   } catch (err) {
     const toast = await toastController.create({
-      message: err.response?.data?.detail || 'Eklenemedi',
+      message: err.response?.data?.detail || 'Could not add',
       duration: 2000, color: 'danger', position: 'bottom'
     })
     await toast.present()

@@ -5,28 +5,28 @@
       <ion-tab-bar slot="bottom">
         <ion-tab-button tab="home" href="/tabs/home">
           <ion-icon :icon="homeOutline" />
-          <ion-label>Ana Sayfa</ion-label>
+          <ion-label>Home</ion-label>
         </ion-tab-button>
         <ion-tab-button tab="barcode" href="/tabs/barcode">
           <ion-icon :icon="barcodeOutline" />
-          <ion-label>Tara</ion-label>
+          <ion-label>Scan</ion-label>
         </ion-tab-button>
         <ion-tab-button tab="map" href="/tabs/map">
           <ion-icon :icon="mapOutline" />
-          <ion-label>Harita</ion-label>
+          <ion-label>Map</ion-label>
         </ion-tab-button>
         <ion-tab-button tab="cart" href="/tabs/cart">
           <ion-icon :icon="cartOutline" />
-          <ion-label>Sepet</ion-label>
+          <ion-label>Cart</ion-label>
           <ion-badge v-if="cartStore.itemCount > 0" color="danger">{{ cartStore.itemCount }}</ion-badge>
         </ion-tab-button>
         <ion-tab-button tab="orders" href="/tabs/orders">
           <ion-icon :icon="receiptOutline" />
-          <ion-label>Fişlerim</ion-label>
+          <ion-label>Receipts</ion-label>
         </ion-tab-button>
         <ion-tab-button tab="profile" href="/tabs/profile">
           <ion-icon :icon="personOutline" />
-          <ion-label>Profil</ion-label>
+          <ion-label>Profile</ion-label>
         </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>

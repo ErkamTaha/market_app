@@ -2,10 +2,10 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-title>Ürün Ara</ion-title>
+        <ion-title>Search Products</ion-title>
       </ion-toolbar>
       <ion-toolbar>
-        <ion-searchbar v-model="searchQuery" placeholder="Ürün veya marka ara..." @ionInput="handleSearch" debounce="300" />
+        <ion-searchbar v-model="searchQuery" placeholder="Search product or brand..." @ionInput="handleSearch" debounce="300" />
       </ion-toolbar>
     </ion-header>
 
@@ -16,12 +16,12 @@
 
       <div class="empty" v-else-if="products.length === 0 && searchQuery">
         <ion-icon :icon="searchOutline" class="empty-icon" />
-        <p>"{{ searchQuery }}" için sonuç bulunamadı</p>
+        <p>No results found for "{{ searchQuery }}"</p>
       </div>
 
       <div class="empty" v-else-if="products.length === 0">
         <ion-icon :icon="searchOutline" class="empty-icon" />
-        <p>Ürün aramak için yukarıdaki alanı kullanın</p>
+        <p>Use the search bar above to find products</p>
       </div>
 
       <div class="product-list" v-else>
@@ -101,10 +101,10 @@ async function handleSearch() {
 async function addToCart(product) {
   try {
     await cartStore.addToCart(product.id, 1)
-    const toast = await toastController.create({ message: `${product.name} sepete eklendi`, duration: 1500, color: 'success', position: 'bottom' })
+    const toast = await toastController.create({ message: `${product.name} added to cart`, duration: 1500, color: 'success', position: 'bottom' })
     await toast.present()
   } catch (err) {
-    const toast = await toastController.create({ message: err.response?.data?.detail || 'Eklenemedi', duration: 2000, color: 'danger', position: 'bottom' })
+    const toast = await toastController.create({ message: err.response?.data?.detail || 'Could not add', duration: 2000, color: 'danger', position: 'bottom' })
     await toast.present()
   }
 }

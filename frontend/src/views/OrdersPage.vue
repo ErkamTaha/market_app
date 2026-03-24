@@ -2,7 +2,7 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-title>Fişlerim</ion-title>
+        <ion-title>My Receipts</ion-title>
       </ion-toolbar>
     </ion-header>
 
@@ -13,9 +13,9 @@
 
       <div class="empty" v-else-if="purchases.length === 0">
         <ion-icon :icon="receiptOutline" class="empty-icon" />
-        <h3>Henüz alışverişiniz yok</h3>
-        <p>Ürün tarayıp ödeme yaptığınızda fişleriniz burada görünecek</p>
-        <ion-button router-link="/tabs/barcode">Ürün Tara</ion-button>
+        <h3>No purchases yet</h3>
+        <p>Your receipts will appear here after you scan products and pay</p>
+        <ion-button router-link="/tabs/barcode">Scan Product</ion-button>
       </div>
 
       <template v-else>
@@ -25,15 +25,15 @@
             <div class="summary-grid">
               <div class="summary-item">
                 <div class="summary-number">{{ purchases.length }}</div>
-                <div class="summary-label">Alışveriş</div>
+                <div class="summary-label">Purchases</div>
               </div>
               <div class="summary-item">
                 <div class="summary-number">{{ totalSpent.toFixed(0) }} ₺</div>
-                <div class="summary-label">Toplam Harcama</div>
+                <div class="summary-label">Total Spent</div>
               </div>
               <div class="summary-item">
                 <div class="summary-number">{{ totalPoints }}</div>
-                <div class="summary-label">Kazanılan Puan</div>
+                <div class="summary-label">Points Earned</div>
               </div>
             </div>
           </ion-card-content>
@@ -51,7 +51,7 @@
             </div>
           </ion-card-header>
           <ion-card-content>
-            <p class="item-summary">{{ p.item_count }} ürün · {{ getPaymentLabel(p.payment_method) }}</p>
+            <p class="item-summary">{{ p.item_count }} items · {{ getPaymentLabel(p.payment_method) }}</p>
             <div class="receipt-code">
               <ion-icon :icon="receiptOutline" />
               <span>{{ p.receipt_code }}</span>
@@ -64,9 +64,9 @@
       <ion-modal :is-open="showDetail" @didDismiss="showDetail = false">
         <ion-header>
           <ion-toolbar>
-            <ion-title>Fiş Detayı</ion-title>
+            <ion-title>Receipt Details</ion-title>
             <ion-buttons slot="end">
-              <ion-button @click="showDetail = false">Kapat</ion-button>
+              <ion-button @click="showDetail = false">Close</ion-button>
             </ion-buttons>
           </ion-toolbar>
         </ion-header>
@@ -94,14 +94,14 @@
           </div>
 
           <div class="detail-total">
-            <span>Toplam</span>
+            <span>Total</span>
             <strong>{{ selectedPurchase.total_price.toFixed(2) }} ₺</strong>
           </div>
 
           <div class="detail-meta">
-            <div><span>Ödeme</span><span>{{ getPaymentLabel(selectedPurchase.payment_method) }}</span></div>
-            <div><span>Puan</span><span>+{{ selectedPurchase.points_earned }}</span></div>
-            <div><span>Durum</span><span>{{ selectedPurchase.status === 'ödendi' ? 'Ödendi' : 'İptal' }}</span></div>
+            <div><span>Payment</span><span>{{ getPaymentLabel(selectedPurchase.payment_method) }}</span></div>
+            <div><span>Points</span><span>+{{ selectedPurchase.points_earned }}</span></div>
+            <div><span>Status</span><span>{{ selectedPurchase.status === 'paid' ? 'Paid' : 'Cancelled' }}</span></div>
           </div>
         </ion-content>
       </ion-modal>
@@ -124,7 +124,7 @@ const loading = ref(true)
 const showDetail = ref(false)
 const selectedPurchase = ref(null)
 
-const totalSpent = computed(() => purchases.value.filter(p => p.status === 'ödendi').reduce((s, p) => s + p.total_price, 0))
+const totalSpent = computed(() => purchases.value.filter(p => p.status === 'paid').reduce((s, p) => s + p.total_price, 0))
 const totalPoints = computed(() => purchases.value.reduce((s, p) => s + p.points_earned, 0))
 
 onMounted(async () => {
@@ -139,11 +139,11 @@ onMounted(async () => {
 })
 
 function formatDate(d) {
-  return new Date(d).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+  return new Date(d).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
 function getPaymentLabel(m) {
-  return { 'kart': 'Kart', 'nakit': 'Nakit', 'cüzdan': 'Cüzdan' }[m] || m
+  return { 'card': 'Card', 'cash': 'Cash', 'wallet': 'Wallet' }[m] || m
 }
 </script>
 
